@@ -1,67 +1,88 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"mini-asm/internal/handler"
 	"mini-asm/internal/service"
 	"mini-asm/internal/storage/postgres"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
-	// 1. Kết nối Database
-	dsn := "host=localhost user=postgres password=postgres dbname=postgres port=5432 sslmode=disable"
+	// 1. Lấy cấu hình từ Environment Variables (Để chạy được Docker Bài 5)
+	dbHost := getEnv("DB_HOST", "localhost")
+	dbPort := getEnv("DB_PORT", "5432")
+	dbUser := getEnv("DB_USER", "postgres")
+	dbPass := getEnv("DB_PASSWORD", "postgres")
+	dbName := getEnv("DB_NAME", "postgres")
+
+	// Tạo chuỗi kết nối linh hoạt
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		dbHost, dbUser, dbPass, dbName, dbPort)
+
+	log.Printf("📡 Đang kết nối tới Database tại: %s:%s...", dbHost, dbPort)
+
+	// 2. Kết nối Database
 	store, err := postgres.NewPostgresStorage(dsn)
 	if err != nil {
 		log.Fatalf("❌ Server không thể khởi động: %v", err)
 	}
 
+	// Khởi tạo bảng nếu chưa có
 	err = store.InitTables()
 	if err != nil {
 		log.Fatalf("❌ Lỗi tạo bảng: %v", err)
 	}
 
-	// 2. Khởi tạo Services
+	// 3. Khởi tạo Services & Handlers
 	assetService := service.NewAssetService(store)
-	scanService := service.NewScanService() // Dòng 28: Khai báo scanService
+	scanService := service.NewScanService()
 
-	// 2. Khởi tạo Handler
-	// SỬA DÒNG NÀY: Truyền CẢ HAI tham số (assetService VÀ scanService) vào hàm
 	assetHandler := handler.NewAssetHandler(assetService, scanService)
-
 	healthHandler := handler.NewHealthHandler(store)
 
 	// 4. Định nghĩa Router
 	router := mux.NewRouter()
 
-	// --- Các Route cũ của bạn ---
+	// --- Health Check Route ---
 	router.HandleFunc("/health", healthHandler.Check).Methods("GET")
+
+	// --- Assets Routes (Bài 1 & Bài 3) ---
+	router.HandleFunc("/assets", assetHandler.GetAssets).Methods("GET")
+	router.HandleFunc("/assets", assetHandler.CreateAsset).Methods("POST") // Thêm mới 1 asset
 	router.HandleFunc("/assets/batch", assetHandler.BatchCreate).Methods("POST")
+	router.HandleFunc("/assets/batch", assetHandler.BatchDelete).Methods("DELETE")
 	router.HandleFunc("/assets/stats", assetHandler.GetStats).Methods("GET")
 	router.HandleFunc("/assets/count", assetHandler.CountAssets).Methods("GET")
-	router.HandleFunc("/assets/batch", assetHandler.BatchDelete).Methods("DELETE")
 	router.HandleFunc("/assets/search", assetHandler.SearchAssets).Methods("GET")
-	router.HandleFunc("/assets", assetHandler.GetAssets).Methods("GET")
 
-	// --- CẬP NHẬT CÁC ROUTE MỚI CHO BÀI 1 & BÀI 3 ---
-
-	// Cho phép POST /assets để tạo 1 asset (Sửa lỗi 405 của bạn)
-	// Lưu ý: Đảm bảo trong asset_handler.go đã có hàm CreateAsset
-	router.HandleFunc("/assets", assetHandler.CreateAsset).Methods("POST")
-
-	// Route để bắt đầu Scan (Bài 1)
+	// --- Scan Routes (Bài 1) ---
 	router.HandleFunc("/assets/{id}/scan", assetHandler.StartScan).Methods("POST")
-
-	// Route để xem kết quả Scan (Bài 1)
-	// Giả sử bạn đặt hàm này trong assetHandler
 	router.HandleFunc("/scan-jobs/{id}/results", assetHandler.GetScanResults).Methods("GET")
 
 	// 5. Chạy Server với CORS Middleware (Bài 3)
-	// Bọc router bằng CORSMiddleware để Frontend gọi được API
-	log.Println("🚀 Server đang chạy tại cổng http://localhost:8080 ...")
-	if err := http.ListenAndServe(":8080", handler.CORSMiddleware(router)); err != nil {
+	// Bọc router bằng CORSMiddleware để Frontend cổng 3000 gọi được API cổng 8080
+	port := ":8080"
+	log.Printf("🚀 Server đang khởi chạy tại http://localhost%s ...", port)
+
+	server := &http.Server{
+		Addr:    port,
+		Handler: handler.CORSMiddleware(router),
+	}
+
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// Hàm hỗ trợ lấy biến môi trường hoặc dùng giá trị mặc định
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
