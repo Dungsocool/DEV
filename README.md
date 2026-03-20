@@ -10,7 +10,7 @@ Dự án được phát triển và xây dựng trên lõi kiến trúc **Clean 
 * [📂 Cấu trúc dự án](#cau-truc)
 * [📡 Danh sách API Endpoints](#api)
 * [💻 Hướng dẫn Cài đặt & Khởi chạy](#cai-dat)
-* [🧪 Hướng dẫn Kiểm thử (Demo Outputs)](#test)
+* [🧪 Hướng dẫn Kiểm thử & Triển khai (Demo Outputs)](#test)
 
 ---
 <a id="tinh-nang"></a>
@@ -25,16 +25,16 @@ Hệ thống được thiết kế toàn diện, từ Backend, Frontend, Testing
 5. **Bài 4 - Đầu tư CI/CD Security Pipeline (GitHub Actions):** Tự động quét mã nguồn trực tiếp để rà soát rủi ro bảo mật qua các công cụ lớn (Gosec, Gitleaks, Trivy, TruffleHog) trước mỗi luồng Merge Request.
 6. **Bài 5 - Infrastructure as Code (Docker Compose):** Đóng gói toàn vẹn Database (Postgres), Backend (Go) và Frontend (Vite) qua Multi-container Docker giúp khởi chạy bằng một lệnh duy nhất.
 7. **Bài 6 - Tính năng EASM Mới (Alerts API):** Ghi nhận tự động các nguy cơ (Vulnerabilities/Alerts) từ kết quả EASM Scans và cung cấp Endpoints duyệt/lọc cảnh báo theo mức độ ưu tiên.
-8. **Bài 7 - Cloud Deployment:** Máy chủ được triển khai Live Operation chạy liên tục trên ảo hóa phần cứng (Cloud VM / Droplet).
-9. **Bài 8 - Đăng ký Domain & TLS/HTTPS:** Cấu hình Webserver (Nginx/Traefik/Caddy) với chứng chỉ số Let's Encrypt bảo mật tuyệt đối qua giao thức truyền tải HTTPS.
-10. **Bài 9 - Auto Deploy on Merge (CD Pipeline):** Máy chủ định tuyến sẽ tự động SSH Pull Code và khởi chạy lại các containers sau khi nhánh main nhận được tính năng mới.
+8. **Bài 7 - Cloud Deployment:** Máy chủ được triển khai Live Operation chạy liên tục trên DigitalOcean Cloud Droplet (Ubuntu 22.04 LTS).
+9. **Bài 8 - Đăng ký Domain & TLS/HTTPS:** Cấu hình Webserver Nginx với chứng chỉ số Let's Encrypt bảo mật tuyệt đối qua HTTPS tại tên miền: `https://dungsocool-asm.duckdns.org`
+10. **Bài 9 - Auto Deploy on Merge (CD Pipeline):** Máy chủ tự động SSH Pull Code và khởi chạy lại các containers sau khi nhánh main được cập nhật commit mới thông qua GitHub Actions.
 
 <a id="cong-nghe"></a>
 ## 🛠️ Công nghệ & Thư viện sử dụng
 * **Backend:** Go (Golang), `gorilla/mux`
 * **Frontend:** ReactJS, Vite
 * **Database:** PostgreSQL 15
-* **Deploy/DevOps:** Docker, Docker Compose, GitHub Actions, Traefik/Caddy
+* **Deploy/DevOps:** Docker, Docker Compose, GitHub Actions, Nginx + Certbot
 * **Kiến trúc kĩ thuật:** Cấu trúc tầng Clean Architecture chuẩn mực: `Handler -> Service -> Storage`
 
 <a id="cau-truc"></a>
@@ -43,7 +43,7 @@ Hệ thống được thiết kế toàn diện, từ Backend, Frontend, Testing
 Dự án phân rã chức năng theo quy mô chuẩn Clean Architecture để tối ưu tính Scale:
 
 ```text
-├── .github/workflows/      # Cấu hình CI/CD GitHub Actions bảo mật
+├── .github/workflows/      # Cấu hình CI/CD GitHub Actions và Auto Deploy
 ├── cmd/server/             # Tệp Entry point nơi server khởi chạy (main.go)
 ├── frontend/               # Mã nguồn Giao diện UI Dashboard (ReactJS)
 ├── docker-compose.yml      # Cấu hình cài đặt đa môi trường Multi-container
@@ -82,77 +82,55 @@ Hãy cài đặt Docker Compose vào máy hoặc Server VM của bạn và chạ
 docker compose up -d --build
 ```
 Webserver của kiến trúc sẽ bắt đầu phục vụ ở cổng cục bộ:
-- **Frontend Dashboard:** `http://localhost:3000`
-- **Backend API:** `http://localhost:8080`
+- **Frontend Dashboard:** `http://localhost:3000` (Local) hoặc `https://dungsocool-asm.duckdns.org` (Production)
+- **Backend API:** `http://localhost:8080` (Local) hoặc `https://dungsocool-asm.duckdns.org/api` (Production)
 
-### Cách 2: Chạy kiểm thử chế độ Phát triển (Dev Mode)
-1. **Bật Database bằng Docker:**
-```bash
-docker compose up -d db
-```
-2. **Khởi chạy Core Backend:**
-```bash
-go run cmd/server/main.go
-```
-3. **Khởi chạy Frontend Dashboard (Tách riêng terminal):**
-```bash
-cd frontend
-npm install
-npm run dev
-```
+---
 
 <a id="test"></a>
-## 🧪 Hướng dẫn Kiểm thử (Demo Outputs)
+## 🧪 Hướng dẫn Kiểm thử & Triển khai (Demo Outputs)
 
-Dưới đây là các minh chứng chạy dự án thực tế thông qua dòng lệnh. Tính năng hiển thị được in ra dưới dạng dữ liệu raw thực thay vì ảnh để tăng độ chi tiết khi phân tích.
-
-### 1. Trạng thái Triển khai Hệ thống (Bài 5)
+### 1. Trạng thái Triển khai Cloud (Bài 7 & 8)
+Hệ thống hiện đã được cấu hình chạy Production Ready qua Nginx Reverse Proxy với HTTPS bảo mật:
 ```text
-PS C:\Users\xxx\DEV> docker compose ps
+URL Truy cập: https://dungsocool-asm.duckdns.org
+SSL Issuer: Let's Encrypt Authority R3
+Server IP: 159.223.60.128
+```
+
+### 2. Kiểm thử Docker Container Status (Bài 5)
+```text
+root@ubuntu:~/project# docker compose ps
 NAME           IMAGE                COMMAND                  SERVICE    STATUS             PORTS
 cmc_backend    dev-backend          "./main"                 backend    Up 19 minutes      0.0.0.0:8080->8080/tcp
 cmc_frontend   dev-frontend         "/docker-entrypoint…"    frontend   Up 19 minutes      0.0.0.0:3000->80/tcp
 cmc_postgres   postgres:15-alpine   "docker-entrypoint.s…"   db         Up 4 hrs (healthy) 0.0.0.0:5432->5432/tcp
 ```
 
-### 2. Kiểm thử Unit Tests Code Coverage (Bài 2)
+### 3. Kiểm thử Unit Tests Code Coverage (Bài 2)
 ```text
 PS C:\Users\xxx\DEV> go test -cover ./...
-...
 ok      mini-asm/internal/model         0.036s  coverage: 100.0% of statements
 ok      mini-asm/internal/scanner       7.051s  coverage: 55.3% of statements
-...
 ```
 
-### 3. API Health Check
+### 4. Kiểm thử HTTPS API Health Check
 ```json
-> curl -s http://localhost:8080/health
+> curl -s https://dungsocool-asm.duckdns.org/api/health
 {
   "status":"ok",
   "database":"connected",
-  "timestamp":"2026-03-20T20:30:00Z"
+  "timestamp":"2026-03-20T21:20:00Z"
 }
 ```
 
-### 4. Quá trình quét nguy cơ Port Scan & Cảnh báo Alerts (Bài 1 & 6)
-Khi người dùng gọi `POST` requesting scan Endpoint (`/assets/{id}/scan`), logic của hệ thống sẽ phân tích các cổng và sinh ra bản Alert chi tiết:
-```json
-> curl -s http://localhost:8080/alerts
-{
-  "data": [
-    {
-      "id": "e89b-12d3",
-      "alert_type": "high_risk_port",
-      "severity": "critical",
-      "title": "High-Risk Port Detected: 22",
-      "description": "Port 22 is exposed on this asset. This port is commonly targeted by attackers."
-    }
-  ],
-  "total": 1,
-  "page": 1,
-  "limit": 20
-}
+### 5. Kiểm thử CI/CD & Auto Deploy Pipeline (Bài 4 & 9)
+Khi mã nguồn được đẩy lên nhánh `main`, tiến trình GitHub Actions sẽ tự rà soát mã nguồn (Gosec, Gitleaks) và thực hiện SSH Deploy lên Droplet:
+```text
+Workflow: Deploy to Production
+Event: push to main
+Status: Success ✅ (Build -> Test -> Security Check -> Deploy)
 ```
 
-### 5. Kiểm thử Giao diện Frontend UI Dashboard (Bài 3)
-Bằng cách mở Web Browser và kết nối vào URL phân phối Web tĩnh của Frontend tại `http://localhost:3000`, toàn bộ cơ sở dữ liệu về thống kê Assets, Port trạng thái và biểu đồ đều được Render thành công. Các nút chức năng (Create, Quick Scan) khi bấm sẽ tự động invoke calls xuống cổng `:8080`.
+---
+*Dự án được bảo mật bởi cơ chế Gosec và chống SQL Injection.*

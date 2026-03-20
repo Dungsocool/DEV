@@ -10,17 +10,17 @@
 - [x] Bài 4: CI/CD với GitHub Actions
 - [x] Bài 5: Deploy với Docker Compose
 - [x] Bài 6: Tính năng EASM mới (Bonus - Alerts API)
-- [ ] Bài 7: Deploy lên Cloud VM (Bonus)
-- [ ] Bài 8: Domain & TLS/HTTPS (Bonus)
-- [ ] Bài 9: Auto Deploy on Merge (Bonus)
+- [x] Bài 7: Deploy lên Cloud VM (Bonus)
+- [x] Bài 8: Domain & TLS/HTTPS (Bonus)
+- [x] Bài 9: Auto Deploy on Merge (Bonus)
 
 ## Link Repository
 
-[Khác: Thay Link GitHub repository của bạn vào đây]
+[GitHub Repository: https://github.com/Dungsocool/DEV]
 
 ## Link Demo (nếu có)
 
-[Link deployed application hoặc Localhost]
+[Live Demo: https://dungsocool-asm.duckdns.org]
 
 ---
 
@@ -67,5 +67,12 @@ cmc_postgres   postgres:15-alpine   "docker-entrypoint.s…"   db         10 min
 
 ### Bài 6: Tính năng EASM mới (Bonus)
 Đã triển khai hệ thống Alerts API dùng để cảnh báo phát hiện issues, cung cấp các API lấy thống kê số lượng loại cảnh báo theo từng Asset.
-*(Chèn ảnh kết quả tại đây)*
-![Bài 6 Alerts](link-anh-neu-co)
+*(Kết quả đã được tích hợp hiển thị trực tiếp trên Dashboard live)*
+
+### Bài 7 & 8: Cloud Deployment & HTTPS
+Ứng dụng đã được triển khai thực tế trên DigitalOcean Droplet tại IP `159.223.60.128` và trỏ tên miền thành công. Ổ khóa xanh HTTPS (Let's Encrypt) đã được kích hoạt.
+**Link kiểm tra:** [https://dungsocool-asm.duckdns.org](https://dungsocool-asm.duckdns.org)
+
+### Bài 9: Auto Deploy on Merge
+Hệ thống CI/CD GitHub Actions đã được cấu hình với SSH Secret. Mỗi khi có code mới đẩy lên nhánh `main`, server sẽ tự động cập nhật phiên bản mới nhất mà không cần can thiệp thủ công.
+*(Trạng thái "Success" hiển thị trong tab Actions của repository)*
