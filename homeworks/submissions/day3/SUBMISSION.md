@@ -1,6 +1,6 @@
 # Homework Submission - Day 3
 
-**Họ tên:** [Thay tên bạn vào đây]
+**Họ tên:** Đặng Tiến Dũng
 
 ## Các bài đã hoàn thành
 
@@ -48,9 +48,9 @@ ok      mini-asm/internal/scanner       7.048s  coverage: 55.3% of statements
 
 ### Bài 3: Tích hợp Frontend
 Đã tích hợp Backend và Frontend ở port `3000`. Có thể nhập liệu tạo mới IP `127.0.0.1` và chạy Port Scan thành công, Modal kết quả hiển thị thông tin Open Ports.
-*(Video test tự động đính kèm bên dưới, bạn có thể xem)*
+*(Bạn có thể xem ảnh chụp giao diện Frontend bên dưới)*
 
-![Frontend Test Demo](file:///C:/Users/xxx/.gemini/antigravity/brain/d439c336-1f72-4a41-93cb-1deb6b53adfd/frontend_test_ui_1773999782373.webp)
+![Frontend UI](docs/images/frontend-ui.png)
 
 ### Bài 4: CI/CD với GitHub Actions
 File `.github/workflows/ci.yml` đã cài đặt chuẩn các check bảo mật (gosec, gitleaks, trivy, trufflehog). Khi đẩy push pull request lên workflow trả về Pass toàn bộ (bạn có thể capture lại ảnh trên tab Actions của Github repository nhé).
