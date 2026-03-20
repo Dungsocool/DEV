@@ -220,7 +220,7 @@ Status:    Success ✅
 ```
 ![GitHub Actions CI/CD Pipeline](docs/images/image-6.png)
 ![GitHub Actions Workflow Steps](docs/images/image-7.png)
-
+![Deploy Success](docs/images/deployment-success.png)
 ### 6. Kiểm thử Giao diện Frontend UI Dashboard (Bài 3)
 Mở trình duyệt và truy cập `http://localhost:3000` hoặc `https://dungsocool-asm.duckdns.org`. Dashboard hiển thị danh sách Assets, cho phép tạo mới, chạy Quick Scan (IP/Port/SSL/Tech) và xem kết quả trực tiếp trên giao diện.
 ![Frontend UI Dashboard](docs/images/image-5.png)
