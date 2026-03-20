@@ -1,0 +1,77 @@
+name: mini-asm Security CI
+
+on:
+  push:
+    branches: [ "main", "homework" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # 1. Job Kiểm tra và Test Code
+  test:
+    name: Build & Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Install dependencies
+        run: go mod tidy
+      - name: Run Tests
+        run: go test -v ./...
+
+  # 2. Job Gosec: Quét lỗi bảo mật trong code Go
+  gosec:
+    name: Code Security (Gosec)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Gosec
+        uses: securego/gosec@master
+        with:
+          args: ./...
+
+  # 3. Job Gitleaks: Quét xem có lộ API Key/Password không
+  gitleaks:
+    name: Secret Detection (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 4. Job Trivy: Quét lỗ hổng trong thư viện (CVEs)
+  trivy:
+    name: Dependency Scan (Trivy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'table'
+          exit-code: '0' # Để 0 để workflow không bị stop nếu có lỗi nhỏ
+          severity: 'CRITICAL,HIGH'
+
+  # 5. Job TruffleHog: Quét sâu lịch sử commit tìm bí mật
+  trufflehog:
+    name: Deep Secret Scan (TruffleHog)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
