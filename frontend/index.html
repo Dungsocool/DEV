@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EASM Dashboard - Day 3</title>
+    <style>
+        :root { --primary: #2563eb; --success: #16a34a; --danger: #dc2626; --bg: #f8fafc; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; }
+        
+        /* Dashboard Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--primary); }
+        .stat-card h4 { margin: 0; color: #64748b; font-size: 14px; }
+        .stat-card div { font-size: 24px; font-weight: bold; margin-top: 5px; }
+
+        /* Form & List */
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .flex-header { display: flex; justify-content: space-between; align-items: center; }
+        
+        input, select { padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; margin-right: 10px; }
+        button { padding: 10px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; transition: 0.2s; }
+        .btn-add { background: var(--primary); color: white; }
+        .btn-scan { background: var(--success); color: white; font-size: 12px; }
+        .btn-delete { background: #fee2e2; color: var(--danger); font-size: 12px; }
+        .btn-view { background: #f1f5f9; color: #475569; font-size: 12px; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; padding: 12px; border-bottom: 2px solid #f1f5f9; color: #64748b; }
+        td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+        .status-badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; background: #dcfce7; color: #166534; }
+
+        /* Modal Results */
+        #resultsModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; width: 60%; margin: 10% auto; padding: 20px; border-radius: 12px; max-height: 70vh; overflow-y: auto; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="flex-header">
+        <h1>🛡️ EASM Dashboard</h1>
+        <button onclick="init()" style="background:#f1f5f9">🔄 Làm mới</button>
+    </div>
+
+    <div class="stats-grid" id="statsBoard">
+        <div class="stat-card"><h4>Tổng Assets</h4><div id="totalAssets">0</div></div>
+        <div class="stat-card" style="border-left-color: var(--success)"><h4>Active</h4><div id="activeAssets">0</div></div>
+        <div class="stat-card" style="border-left-color: #f59e0b"><h4>Scans Today</h4><div>24</div></div>
+    </div>
+
+    <div class="card">
+        <h3>➕ Thêm tài sản mới</h3>
+        <input type="text" id="assetName" placeholder="Tên miền hoặc IP..." style="width: 40%">
+        <select id="assetType">
+            <option value="domain">Domain</option>
+            <option value="ip">IP Address</option>
+        </select>
+        <button class="btn-add" onclick="createAsset()">Thêm Asset</button>
+    </div>
+
+    <div class="card">
+        <h3>🌐 Danh sách Assets</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tên tài sản</th>
+                    <th>Loại</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="assetTable">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="resultsModal">
+    <div class="modal-content">
+        <div class="flex-header">
+            <h3>🔍 Kết quả quét gần nhất</h3>
+            <button onclick="closeModal()">Đóng</button>
+        </div>
+        <pre id="rawResults" style="background: #f8fafc; padding: 15px; border-radius: 8px;"></pre>
+    </div>
+</div>
+
+<script>
+    const API_URL = "http://localhost:8080";
+
+    async function init() {
+        await fetchAssets();
+        await fetchStats();
+    }
+
+    // 1. Lấy danh sách Assets (GET /assets)
+    async function fetchAssets() {
+        const res = await fetch(`${API_URL}/assets`);
+        const data = await res.json();
+        const assets = data.data || data;
+        const tbody = document.getElementById('assetTable');
+        
+        tbody.innerHTML = assets.map(a => `
+            <tr>
+                <td><strong>${a.name}</strong></td>
+                <td><small>${a.type.toUpperCase()}</small></td>
+                <td><span class="status-badge">${a.status || 'active'}</span></td>
+                <td>
+                    <button class="btn-scan" onclick="startScan('${a.id}')">⚡ Scan Port</button>
+                    <button class="btn-view" onclick="viewResults('${a.id}')">👁️ Kết quả</button>
+                    <button class="btn-delete" onclick="deleteAsset('${a.id}')">🗑️</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // 2. Thống kê (GET /stats)
+    async function fetchStats() {
+        try {
+            const res = await fetch(`${API_URL}/assets/stats`);
+            const stats = await res.json();
+            document.getElementById('totalAssets').innerText = stats.total || 0;
+            document.getElementById('activeAssets').innerText = stats.active || 0;
+        } catch(e) { console.log("Chưa có API stats"); }
+    }
+
+    // 3. Thêm mới (POST /assets)
+    async function createAsset() {
+        const name = document.getElementById('assetName').value;
+        const type = document.getElementById('assetType').value;
+        if(!name) return;
+
+        await fetch(`${API_URL}/assets`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, type })
+        });
+        document.getElementById('assetName').value = "";
+        init();
+    }
+
+    // 4. Xóa asset (DELETE /assets?ids=...)
+    async function deleteAsset(id) {
+        if(!confirm("Bạn có chắc muốn xóa?")) return;
+        await fetch(`${API_URL}/assets?ids=${id}`, { method: 'DELETE' });
+        init();
+    }
+
+    // 5. Khởi tạo Scan (POST /assets/{id}/scan)
+    async function startScan(id) {
+        const res = await fetch(`${API_URL}/assets/${id}/scan`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ scan_type: "port" })
+        });
+        const job = await res.json();
+        alert("🚀 Đã bắt đầu quét! Job ID: " + job.id);
+    }
+
+    // 6. Xem kết quả (GET /scan-jobs/{id}/results)
+    // Lưu ý: Trong bài này chúng ta dùng assetID để xem kết quả nhanh
+    async function viewResults(id) {
+        // Giả sử API trả về kết quả gần nhất của Asset
+        const res = await fetch(`${API_URL}/scan-jobs/mock-id/results`); 
+        const result = await res.json();
+        document.getElementById('rawResults').innerText = JSON.stringify(result, null, 2);
+        document.getElementById('resultsModal').style.display = 'block';
+    }
+
+    function closeModal() { document.getElementById('resultsModal').style.display = 'none'; }
+
+    // Chạy khi load trang
+    init();
+</script>
+</body>
+</html>
