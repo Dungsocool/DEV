@@ -1,0 +1,508 @@
+{
+	"Golang errors": {},
+	"Issues": [
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\storage\\postgres\\stats_storage.go",
+			"code": "31: \t\tvar c int\n32: \t\trowsStatus.Scan(\u0026st, \u0026c)\n33: \t\tstats.ByStatus[st] = c\n",
+			"line": "32",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\storage\\postgres\\stats_storage.go",
+			"code": "22: \t\tvar c int\n23: \t\trowsType.Scan(\u0026t, \u0026c)\n24: \t\tstats.ByType[t] = c\n",
+			"line": "23",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\storage\\postgres\\stats_storage.go",
+			"code": "15: \n16: \ts.db.QueryRow(\"SELECT COUNT(*) FROM assets\").Scan(\u0026stats.Total)\n17: \n",
+			"line": "16",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\storage\\postgres\\bonus_storage.go",
+			"code": "62: \t\tvar a model.Asset\n63: \t\trows.Scan(\u0026a.ID, \u0026a.Name, \u0026a.Type, \u0026a.Status, \u0026a.CreatedAt, \u0026a.UpdatedAt)\n64: \t\tassets = append(assets, \u0026a)\n",
+			"line": "63",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\storage\\postgres\\bonus_storage.go",
+			"code": "46: \t\tvar a model.Asset\n47: \t\trows.Scan(\u0026a.ID, \u0026a.Name, \u0026a.Type, \u0026a.Status, \u0026a.CreatedAt, \u0026a.UpdatedAt)\n48: \t\tassets = append(assets, \u0026a)\n",
+			"line": "47",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\storage\\postgres\\bonus_storage.go",
+			"code": "32: \tvar total int\n33: \ts.db.QueryRow(fmt.Sprintf(\"SELECT COUNT(*) FROM assets %s\", whereClause), args...).Scan(\u0026total)\n34: \n",
+			"line": "33",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\scanner\\port_scanner.go",
+			"code": "51: \t\t}\n52: \t\tconn.Close()\n53: \n",
+			"line": "52",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\scanner\\ip_scanner.go",
+			"code": "32: \tvar apiRes map[string]interface{}\n33: \tjson.NewDecoder(resp.Body).Decode(\u0026apiRes)\n34: \n",
+			"line": "33",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\health_handler.go",
+			"code": "38: \tw.WriteHeader(http.StatusOK)\n39: \tjson.NewEncoder(w).Encode(map[string]interface{}{\n40: \t\t\"status\": \"ok\",\n41: \t\t\"database\": map[string]string{\"status\": \"connected\"},\n42: \t\t\"timestamp\": time.Now().Format(time.RFC3339),\n43: \t})\n44: }\n",
+			"line": "39-43",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\health_handler.go",
+			"code": "28: \t\tw.WriteHeader(http.StatusServiceUnavailable)\n29: \t\tjson.NewEncoder(w).Encode(map[string]interface{}{\n30: \t\t\t\"status\":    \"degraded\",\n31: \t\t\t\"database\":  map[string]string{\"status\": \"disconnected\"},\n32: \t\t\t\"timestamp\": time.Now().Format(time.RFC3339),\n33: \t\t})\n34: \t\treturn\n",
+			"line": "29-33",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "200: \t}\n201: \tjson.NewEncoder(w).Encode(res)\n202: }\n",
+			"line": "201",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "192: \t\tw.WriteHeader(http.StatusBadRequest)\n193: \t\tjson.NewEncoder(w).Encode(map[string]string{\"message\": \"thiếu tham số q\"})\n194: \t\treturn\n",
+			"line": "193",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "184: \t}\n185: \tjson.NewEncoder(w).Encode(res)\n186: }\n",
+			"line": "185",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "171: \tw.WriteHeader(http.StatusOK)\n172: \tjson.NewEncoder(w).Encode(result)\n173: }\n",
+			"line": "172",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "162: \t\tw.WriteHeader(http.StatusBadRequest)\n163: \t\tjson.NewEncoder(w).Encode(map[string]string{\"message\": \"thiếu tham số ids\"})\n164: \t\treturn\n",
+			"line": "163",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "154: \t}\n155: \tjson.NewEncoder(w).Encode(countResult)\n156: }\n",
+			"line": "155",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "144: \t}\n145: \tjson.NewEncoder(w).Encode(stats)\n146: }\n",
+			"line": "145",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "134: \tw.WriteHeader(http.StatusCreated)\n135: \tjson.NewEncoder(w).Encode(model.APIResponse{Code: 201, Status: \"success\", Message: \"Tạo thành công\", Data: map[string]interface{}{\"created\": len(ids), \"ids\": ids}})\n136: }\n",
+			"line": "135",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "130: \t\tw.WriteHeader(http.StatusBadRequest)\n131: \t\tjson.NewEncoder(w).Encode(model.APIResponse{Code: 400, Status: \"fail\", Message: err.Error()})\n132: \t\treturn\n",
+			"line": "131",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "124: \t\tw.WriteHeader(http.StatusBadRequest)\n125: \t\tjson.NewEncoder(w).Encode(model.APIResponse{Code: 400, Status: \"fail\", Message: \"Dữ liệu lỗi\"})\n126: \t\treturn\n",
+			"line": "125",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "114: \n115: \tjson.NewEncoder(w).Encode(mockResult)\n116: }\n",
+			"line": "115",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "82: \tw.WriteHeader(http.StatusAccepted)\n83: \tjson.NewEncoder(w).Encode(job)\n84: }\n",
+			"line": "83",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "77: \t\tw.WriteHeader(http.StatusBadRequest)\n78: \t\tjson.NewEncoder(w).Encode(model.APIResponse{Code: 400, Status: \"fail\", Message: err.Error()})\n79: \t\treturn\n",
+			"line": "78",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "48: \tw.WriteHeader(http.StatusCreated)\n49: \tjson.NewEncoder(w).Encode(model.APIResponse{\n50: \t\tCode:    201,\n51: \t\tStatus:  \"success\",\n52: \t\tMessage: \"Tạo Asset thành công\",\n53: \t\tData:    map[string]interface{}{\"id\": ids[0]},\n54: \t})\n55: }\n",
+			"line": "49-54",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "43: \t\tw.WriteHeader(http.StatusInternalServerError)\n44: \t\tjson.NewEncoder(w).Encode(model.APIResponse{Code: 500, Status: \"fail\", Message: err.Error()})\n45: \t\treturn\n",
+			"line": "44",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\asset_handler.go",
+			"code": "35: \t\tw.WriteHeader(http.StatusBadRequest)\n36: \t\tjson.NewEncoder(w).Encode(model.APIResponse{Code: 400, Status: \"fail\", Message: \"Dữ liệu không hợp lệ\"})\n37: \t\treturn\n",
+			"line": "36",
+			"column": "3",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\alert_handler.go",
+			"code": "194: \tw.Header().Set(\"Content-Type\", \"application/json\")\n195: \tjson.NewEncoder(w).Encode(map[string]interface{}{\n196: \t\t\"data\":       alerts,\n197: \t\t\"total\":      total,\n198: \t\t\"page\":       page,\n199: \t\t\"limit\":      limit,\n200: \t\t\"total_page\": (total + limit - 1) / limit,\n201: \t})\n202: }\n",
+			"line": "195-201",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\alert_handler.go",
+			"code": "153: \tw.Header().Set(\"Content-Type\", \"application/json\")\n154: \tjson.NewEncoder(w).Encode(stats)\n155: }\n",
+			"line": "154",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\alert_handler.go",
+			"code": "123: \tw.Header().Set(\"Content-Type\", \"application/json\")\n124: \tjson.NewEncoder(w).Encode(alert)\n125: }\n",
+			"line": "124",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\alert_handler.go",
+			"code": "90: \tw.Header().Set(\"Content-Type\", \"application/json\")\n91: \tjson.NewEncoder(w).Encode(map[string]interface{}{\n92: \t\t\"data\":       alerts,\n93: \t\t\"total\":      total,\n94: \t\t\"page\":       page,\n95: \t\t\"limit\":      limit,\n96: \t\t\"total_page\": (total + limit - 1) / limit,\n97: \t})\n98: }\n",
+			"line": "91-97",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		},
+		{
+			"severity": "LOW",
+			"confidence": "HIGH",
+			"cwe": {
+				"id": "703",
+				"url": "https://cwe.mitre.org/data/definitions/703.html"
+			},
+			"rule_id": "G104",
+			"details": "Errors unhandled",
+			"file": "C:\\Users\\xxx\\DEV\\internal\\handler\\alert_handler.go",
+			"code": "58: \tw.Header().Set(\"Content-Type\", \"application/json\")\n59: \tjson.NewEncoder(w).Encode(alert)\n60: }\n",
+			"line": "59",
+			"column": "2",
+			"nosec": false,
+			"suppressions": null
+		}
+	],
+	"Stats": {
+		"files": 23,
+		"lines": 2009,
+		"nosec": 1,
+		"found": 31
+	},
+	"GosecVersion": "dev"
+}

@@ -19,6 +19,7 @@ func (s *PostgresStorage) BatchDelete(ids []string) (int, error) {
 		args[i] = id
 	}
 
+	// #nosec G201 -- safe because placeholders are just parameterized symbols
 	query := fmt.Sprintf("DELETE FROM assets WHERE id IN (%s)", strings.Join(placeholders, ","))
 	
 	result, err := s.db.Exec(query, args...)

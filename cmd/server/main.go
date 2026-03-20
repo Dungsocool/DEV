@@ -8,6 +8,7 @@ import (
 	"mini-asm/internal/storage/postgres"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -77,8 +78,9 @@ func main() {
 	log.Printf("🚀 Server đang khởi chạy tại http://localhost%s ...", port)
 
 	server := &http.Server{
-		Addr:    port,
-		Handler: handler.CORSMiddleware(router),
+		Addr:              port,
+		Handler:           handler.CORSMiddleware(router),
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
 	if err := server.ListenAndServe(); err != nil {
