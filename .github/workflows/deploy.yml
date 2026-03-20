@@ -123,10 +123,10 @@ jobs:
           DEPLOY_HOST="${{ secrets.DEPLOY_HOST }}"
           
           # Test health endpoint
-          curl -f https://${DEPLOY_HOST}/health || exit 1
+          curl -f https://${DEPLOY_HOST}/api/health || exit 1
           
           # Test assets endpoint
-          curl -f https://${DEPLOY_HOST}/assets || exit 1
+          curl -f https://${DEPLOY_HOST}/api/assets || exit 1
           
           echo "✅ All endpoints are healthy"
       
