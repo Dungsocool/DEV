@@ -41,9 +41,13 @@ func main() {
 	// 3. Khởi tạo Services & Handlers
 	assetService := service.NewAssetService(store)
 	scanService := service.NewScanService()
+	
+	alertStorage := postgres.NewPostgresAlertStorage(store.DB())
+	alertService := service.NewAlertService(alertStorage, store)
 
 	assetHandler := handler.NewAssetHandler(assetService, scanService)
 	healthHandler := handler.NewHealthHandler(store)
+	alertHandler := handler.NewAlertHandler(alertService)
 
 	// 4. Định nghĩa Router
 	router := mux.NewRouter()
@@ -63,6 +67,9 @@ func main() {
 	// --- Scan Routes (Bài 1) ---
 	router.HandleFunc("/assets/{id}/scan", assetHandler.StartScan).Methods("POST")
 	router.HandleFunc("/scan-jobs/{id}/results", assetHandler.GetScanResults).Methods("GET")
+
+	// --- Alert Routes (Bài 6) ---
+	alertHandler.RegisterRoutes(router)
 
 	// 5. Chạy Server với CORS Middleware (Bài 3)
 	// Bọc router bằng CORSMiddleware để Frontend cổng 3000 gọi được API cổng 8080

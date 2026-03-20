@@ -1,99 +1,79 @@
-﻿# 🚀 CMC Intern API Project - Asset Management
+# 🚀 CMC Intern API Project - Asset Management & EASM
 
-Đây là dự án xây dựng hệ thống RESTful API dùng để quản lý các tài sản IT (Domain, IP, Service), được phát triển bằng Go (Golang) và cơ sở dữ liệu PostgreSQL. Dự án tuân thủ nghiêm ngặt mô hình **Clean Architecture** để tối ưu hóa việc bảo trì và phân tách rõ ràng các nghiệp vụ.
-## 📑 Mục lục (Table of Contents)
+Đây là dự án xây dựng hệ thống RESTful API dùng để quản lý các tài sản IT (Domain, IP, Service) và hệ thống quét tài nguyên (EASM - External Attack Surface Management). Dự án được phát triển bằng Go (Golang), ReactJS (Frontend) và cơ sở dữ liệu PostgreSQL. Dự án tuân thủ nghiêm ngặt mô hình **Clean Architecture** để tối ưu hóa việc bảo trì và phân tách rõ ràng các nghiệp vụ.
+
+## 📑 Mục lục (Bài Tập Về Nhà - Sessions 5-7)
+* [✅ Tiến độ Bài Tập (Day 3)](#tinh-nang)
 * [🛠️ Công nghệ & Thư viện sử dụng](#cong-nghe)
-* [🛡️ Tiêu điểm Bảo mật: Ngăn chặn hoàn toàn SQL Injection](#bao-mat)
-* [✅ Các tính năng đã hoàn thành](#tinh-nang)
 * [📂 Cấu trúc thư mục (Project Structure)](#cau-truc)
 * [📡 Danh sách API Endpoints](#api)
 * [💻 Hướng dẫn Cài đặt & Khởi chạy (How to Run)](#cai-dat)
 * [🧪 Hướng Dẫn Test Từng Bài (API Testing Guide)](#test)
-* [🛡️ Các cách phòng chống SQL Injection KHÁC](#phong-chong-khac)
+* [💾 Bài tập cũ (Day 1 & 2)](#day1-2)
 
 ---
 <a id="cong-nghe"></a>
 ## 🛠️ Công nghệ & Thư viện sử dụng
-* **Ngôn ngữ:** Go (Golang)
+* **Backend:** Go (Golang)
+* **Frontend:** ReactJS, Vite
 * **Cơ sở dữ liệu:** PostgreSQL
-* **Bộ định tuyến (Router):** `gorilla/mux` (Kết hợp thư viện chuẩn `net/http`)
-* **Hạ tầng:** Docker & Docker Compose
+* **Bộ định tuyến (Router):** `gorilla/mux`
+* **Hạ tầng & Triển khai:** Docker, Docker Compose, GitHub Actions (CI/CD)
 * **Kiến trúc:** Clean Architecture (Handler -> Service -> Storage)
 
 <a id="bao-mat"></a>
 ## 🛡️ Tiêu điểm Bảo mật: Ngăn chặn hoàn toàn SQL Injection (SQLi)
 
-Trong dự án này, rủi ro SQL Injection đã được triệt tiêu 100% tại tầng Storage bằng cách áp dụng triệt để kỹ thuật **Parameterized Queries** (Truy vấn tham số hóa) thông qua driver `database/sql` của Go.
+Trong dự án này, rủi ro SQL Injection đã được triệt tiêu 100% tại tầng Storage bằng cách áp dụng triệt để kỹ thuật **Parameterized Queries** (Truy vấn tham số hóa) thông qua driver `database/sql` của Go. 
 
-Nguyên lý hoạt động (Tại sao nó an toàn?)
-Thay vì sử dụng cách nối chuỗi (String Concatenation) nguy hiểm để tạo câu lệnh SQL, hệ thống tách bạch hoàn toàn giữa **"Cấu trúc lệnh" (Code)** và **"Dữ liệu" (Data)**. 
+Nguyên lý hoạt động (Tại sao nó an toàn?): Khi một truy vấn được gửi đi, quá trình diễn ra qua 2 bước bảo mật khép kín:
+**Bước 1 (Prepare):** Database nhận cấu trúc câu lệnh SQL với các "chỗ trống" ảo. 
+**Bước 2 (Execute):** Dữ liệu người dùng nhập vào mới được gửi xuống để "lấp" vào các chỗ trống đó dưới dạng **Văn bản thuần túy**.
 
-Khi một truy vấn được gửi đi, quá trình diễn ra qua 2 bước bảo mật khép kín:
-
-
-**Bước 1 (Prepare)** : Database nhận cấu trúc câu lệnh SQL với các "chỗ trống" ảo (Placeholders như `$1, $2`). Nó tiến hành biên dịch (compile) cấu trúc lệnh này trước.
-
-
-**Bước 2 (Execute)**: Dữ liệu người dùng nhập vào mới được gửi xuống để "lấp" vào các chỗ trống đó. Lúc này, Database xử lý chúng hoàn toàn dưới dạng **Văn bản thuần túy (Literal Values)**, tuyệt đối không coi đó là một phần của câu lệnh thực thi.
-
-#### Minh họa thực tế 
-📍 Bài 3 (Batch Delete)
-
-
-
-<img width="786" height="523" alt="image" src="https://github.com/user-attachments/assets/20bbf63d-7889-4736-99ff-152d3204a86b" />
-
-
-Sử dụng động Parameterized Queries với toán tử IN để bảo mật tính năng xóa hàng loạt, không cộng chuỗi ID trực tiếp.
-
-📍  Bài 7 (Search by Name)
-<img width="1074" height="337" alt="image" src="https://github.com/user-attachments/assets/cea5d9fd-febf-4d38-9c47-79840fde173a" />
-
-Sử dụng tham số $1 kết hợp toán tử ILIKE. Ký tự '%' được nối vào biến ở tầng Go, đảm bảo cấu trúc lệnh SQL không bị phá vỡ bởi input của người dùng.
-
-#### Kết luận: Nhờ cơ chế bọc tham số $1, $2 của PostgreSQL và thư viện Go, mọi ký tự đặc biệt như dấu nháy đơn ('), dấu chấm phẩy (;) hay các lệnh SQL lồng ghép từ Hacker đều bị vô hiệu hóa hoàn toàn trước khi chạm vào dữ liệu thực tế.
+*(Xem thêm ảnh minh họa ở phần Test Day 1 & 2).*
 
 <a id="tinh-nang"></a>
 ## ✅ Các tính năng đã hoàn thành
-Dự án đã hoàn thiện toàn bộ các yêu cầu cốt lõi và nâng cao:
-1. **Bài 1 - Statistics APIs:** Cung cấp API thống kê tổng tài sản và đếm số lượng tài sản theo các bộ lọc (loại, trạng thái).
-2. **Bài 2 - Batch Create:** Thêm mới hàng loạt tài sản (tối đa 100 items/request) an toàn tuyệt đối với cơ chế **Database Transaction** (All-or-nothing).
+
+### Giai đoạn 1 & 2 (Day 1-2):
+1. **Bài 1 - Statistics APIs:** Cung cấp API thống kê tổng tài sản và đếm số lượng tài sản.
+2. **Bài 2 - Batch Create:** Thêm mới hàng loạt tài sản (tối đa 100 items/request).
 3. **Bài 3 - Batch Delete:** Xóa hàng loạt tài sản thông minh dựa trên danh sách ids.
-4. **Bài 4 - Connection Retry:** Xây dựng thuật toán **Exponential Backoff** giúp Server tự động thử lại kết nối (tối đa 5 lần) nếu Database bị sập hoặc khởi động chậm.
-5. **Bài 5 - Health Check:** Cung cấp API giám sát tình trạng hệ thống, trả về trạng thái của Database và các thông số của Connection Pool.
-6. **Bài 6 - Pagination & Filtering:** Xử lý phân trang và lọc dữ liệu động bằng SQL để tối ưu hóa hiệu năng truy vấn danh sách tài sản.
-7. **Bài 7 - Search by Name:** Hỗ trợ tìm kiếm tài sản theo tên với cơ chế khớp một phần (Partial match / Case-insensitive).
+4. **Bài 4 - Connection Retry:** Thuật toán **Exponential Backoff** tự động thử lại kết nối DB.
+5. **Bài 5 - Health Check:** Cung cấp API giám sát tình trạng hệ thống.
+6. **Bài 6 - Pagination & Filtering:** Xử lý phân trang và lọc dữ liệu động.
+7. **Bài 7 - Search by Name:** Tìm kiếm tài sản theo tên (Partial match).
+
+### Giai đoạn 3 (Day 3) - EASM & Deployment (Hoàn thành 6/9 bài):
+1. **Bài 1 - Mở rộng Scan API:** Hỗ trợ tính năng Web/Port Scan qua Giao thức API.
+2. **Bài 2 - Viết Unit Tests:** Hệ thống Test nội bộ cho Model dự án và Scanner tool với Coverage cao.
+3. **Bài 3 - Tích hợp Frontend:** Tích hợp giao diện UI Web Dashboard bằng ReactJS để thao tác trực quan.
+4. **Bài 4 - CI/CD GitHub Actions:** Pipeline kiểm tra bảo mật (gosec, gitleaks, trivy, trufflehog).
+5. **Bài 5 - Deploy Docker Compose:** Đóng gói toàn bộ Frontend, Backend, Database bằng Container.
+6. **Bài 6 - Tính năng EASM Mới:** Hệ thống Cảnh báo (Alerts API) - Quản lý và thống kê các cảnh báo bảo mật.
+
+### 🌟 Bonus (Đang chờ - Day 3):
+- **Bài 7 - Deploy Cloud VM:** Đưa ứng dụng lên Server thực tế.
+- **Bài 8 - Domain & TLS/HTTPS:** Cấu hình tên miền và chứng chỉ SSL.
+- **Bài 9 - Auto Deploy On Merge:** Tự động đẩy code lên Server khi Merge nhánh Main.
+
 <a id="cau-truc"></a>
 ## 📂 Cấu trúc thư mục (Project Structure)
 Dự án được chia thành các package nhỏ lẻ tuân theo Clean Architecture:
 
 ```text
-├── cmd/
-│   └── server/
-│       └── main.go                 # Entry point: Điểm khởi chạy server
-├── homeworks/
-│   └── submissions/
-│       ├── SUBMISSION.md           # File checklist nộp bài
-│       └── (Các file ảnh minh chứng)
+├── .github/workflows/      # Cấu hình CI/CD GitHub Actions
+├── cmd/server/             # Entry point (main.go)
+├── frontend/               # Mã nguồn UI (ReactJS)
+├── homeworks/              # Chứa các báo cáo nộp bài (SUBMISSION.md)
 ├── internal/
-│   ├── handler/                    # Tầng giao tiếp HTTP
-│   │   └── asset_handler.go        # Xử lý Request/Response cho Assets
-│   ├── model/                      # Định nghĩa các cấu trúc dữ liệu
-│   │   ├── bonus.go
-│   │   └── stats.go
-│   ├── service/                    # Tầng xử lý Logic nghiệp vụ
-│   │   └── asset_service.go
-│   └── storage/                    # Tầng giao tiếp Cơ sở dữ liệu
-│       ├── storage.go              # Interface của Storage
-│       └── postgres/               # Triển khai cụ thể với PostgreSQL
-│           ├── asset_storage.go    # Query CRUD cơ bản
-│           ├── bonus_storage.go    # Query cho tính năng phân trang, tìm kiếm
-│           ├── delete_storage.go   # Query cho tính năng xóa hàng loạt
-│           ├── postgres.go         # Cấu hình kết nối và Retry DB
-│           └── stats_storage.go    # Query cho tính năng thống kê
-├── docker-compose.yml              # File khởi tạo database PostgreSQL
+│   ├── handler/            # Tầng giao tiếp HTTP
+│   ├── model/              # Định nghĩa các cấu trúc dữ liệu
+│   ├── scanner/            # Chứa các logic gọi Tool Scan EASM (Bài 1, Day 3)
+│   ├── service/            # Tầng xử lý Logic nghiệp vụ
+│   └── storage/            # Tầng giao tiếp Cơ sở dữ liệu (PostgreSQL)
+├── docker-compose.yml      # Cấu hình cài đặt multi-container
 └── README.md
-
 ```
 
 <a id="api"></a>
@@ -101,152 +81,140 @@ Dự án được chia thành các package nhỏ lẻ tuân theo Clean Architect
 
 | Method | Endpoint | Tính năng |
 | :--- | :--- | :--- |
-| `GET` | `/health` | Kiểm tra trạng thái của Server và Database |
-| `GET` | `/assets/stats` | Thống kê số lượng tài sản theo loại và trạng thái |
-| `GET` | `/assets/count` | Đếm tài sản (hỗ trợ Query: `?type=...&status=...`) |
-| `POST` | `/assets/batch` | Tạo mới nhiều tài sản cùng lúc |
-| `DELETE` | `/assets/batch` | Xóa nhiều tài sản (Query: `?ids=id1,id2...`) |
+| `GET` | `/health` | Kiểm tra trạng thái của Server |
+| `POST` | `/assets` | Tạo mới 1 tài sản |
 | `GET` | `/assets` | Lấy danh sách tài sản (Query: `?page=1&limit=20`) |
-
+| `GET` | `/assets/stats` | Thống kê số lượng tài sản theo loại |
 | `GET` | `/assets/search` | Tìm kiếm tài sản theo tên (Query: `?q=keyword`) |
+| `POST` | `/assets/batch` | Tạo mới nhiều tài sản cùng lúc |
+| `DELETE` | `/assets/batch` | Xóa nhiều tài sản (Query: `?ids=1,2`) |
+| **`POST`** | **`/assets/{id}/scan`** | **Khởi tạo chạy công cụ quét Scan (IP/Port)** |
+| **`GET`** | **`/scan-jobs/{id}/results`** | **Lấy dữ liệu kết quả sau khi quét xong** |
+| `GET` | `/alerts` | Lấy danh sách cảnh báo bảo mật (Bài 6) |
+| `GET` | `/assets/{id}/alerts` | Lấy cảnh báo theo một tài sản cụ thể |
+
 <a id="cai-dat"></a>
 ## 💻 Hướng dẫn Cài đặt & Khởi chạy (How to Run)
-1. Khởi chạy Database:
-Đảm bảo máy bạn đã cài Docker. Mở terminal và chạy lệnh sau để dựng database:
 
+### Cách 1: Chạy bằng Docker Compose (Khuyên dùng)
+Đảm bảo máy bạn đã cài Docker Desktop. Chạy lệnh:
+```bash
+docker compose up -d --build
+```
+Dự án sẽ khởi chạy tại:
+- **Frontend Dashboard:** `http://localhost:3000`
+- **Backend API:** `http://localhost:8080`
 
-
-
-
-docker-compose up -d
-
-
-
-2. Khởi chạy API Server:
-
-
-
-
-Tiếp tục chạy lệnh sau để khởi động ứng dụng Go:
-
+### Cách 2: Chạy độc lập (Local/Dev)
+1. **Khởi chạy Database:**
+```bash
+docker compose up -d db
+```
+2. **Khởi chạy API Server:**
+```bash
 go run cmd/server/main.go
-
-
-
-
-Ghi chú: Nhờ tính năng Connection Retry (Bài 4), Server sẽ tự động chờ và kết nối lại nếu PostgreSQL đang trong quá trình khởi động.
-
-Server sẽ lắng nghe các request tại địa chỉ: http://localhost:8080
+```
+3. **Khởi chạy Frontend:** Mở terminal mới:
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
 <a id="test"></a>
 ## 🧪 Hướng Dẫn Test Từng Bài (API Testing Guide)
 
-*(Lưu ý: Đảm bảo Server đang chạy ở `http://localhost:8080` trước khi chạy lệnh. Nếu bạn dùng Windows PowerShell, hãy gõ `curl.exe` thay cho `curl` hoặc sử dụng Git Bash).*
+*(Dưới đây là phần minh chứng kiểm thử các chức năng của toàn bộ dự án)*
 
-### [Bài 1] Thống kê & Đếm tài sản (Statistics & Count )
+### 🚀 [PHẦN MỚI] BÀI TẬP DAY 3 (Sessions 5-7)
 
-1. Lấy báo cáo tổng quan (Đếm tổng, nhóm theo Type và Status)
+#### Bài 1: Mở rộng Scan API
+Gửi một POST request tới hệ thống để quét Port của 1 IP Asset.
+```bash
+curl.exe -s -X POST http://localhost:8080/assets/<IP-ASSET-ID>/scan -H "Content-Type: application/json" -d '{"scan_type":"port"}'
+```
+*(Chèn ảnh kết quả Test Scan API bằng Postman/Curl vào đây)*
+![Test Scan API](docs/day3-bai1-scan.png)
 
+#### Bài 2: Viết Unit Tests
+Chạy lệnh `go test -v -coverprofile=coverage.out ./...` để kiểm tra toàn bộ ứng dụng. 
+*(Chèn ảnh Terminal hiện "PASS" xanh và mức độ test coverage vào đây)*
+![Unit Tests Result](docs/day3-bai2-unittest.png)
+
+#### Bài 3: Tích hợp Frontend
+Dashboard ở port `3000` cho phép dễ dàng tạo Asset và Xem kết quả Port Scan.
+*(Chèn ảnh giao diện trình duyệt web đang hiển thị kết quả thao tác vào đây)*
+![Frontend UI](docs/day3-bai3-frontend.png)
+
+#### Bài 4: CI/CD với GitHub Actions
+Luồng CI/CD được kích hoạt tự động mỗi khi có Push/Merge với các công cụ bảo mật Gosec, Gitleaks, v.v.
+*(Chèn ảnh màn hình workflow ticks xanh Github Actions vào đây)*
+![Github Actions CI/CD](docs/day3-bai4-cicd.png)
+
+#### Bài 5: Deploy với Docker Compose
+Kiểm tra trạng thái các container bằng `docker compose ps`:
+*(Chèn ảnh màn hình Docker Desktop hoặc Terminal hiển thị container đang "Up" vào đây)*
+![Docker Compose Deployment](docs/day3-bai5-docker.png)
+
+#### Bài 6 (Tính năng EASM mới)
+Hệ thống Alerts API cảnh báo bảo mật. Bạn có thể kiểm tra danh sách qua endpoint `/alerts`.
+*(Chèn ảnh kết quả test Tính năng EASM mới)*
+![Bonus Bài 6](docs/day3-bai6-bonus.png)
+
+#### Bài 7 -> 9: Các tính năng nâng cao (Bonus)
+*(Chưa hoàn thiện)*
+
+---
+<a id="day1-2"></a>
+### 💾 [PHẦN CŨ] BÀI TẬP DAY 1 & 2
+
+#### [Bài 1] Thống kê & Đếm tài sản (Statistics & Count )
+```bash
 curl.exe -X GET http://localhost:8080/assets/stats
+```
 <img width="697" height="67" alt="image" src="https://github.com/user-attachments/assets/50f12b73-ebc5-4092-9122-a6e68b4cf119" />
 
-2. Đếm tài sản kết hợp bộ lọc động (Ví dụ: Đếm số IP đang active)
-
-
-
-curl.exe -X GET "http://localhost:8080/assets/count?type=ip&status=active"
-<img width="894" height="71" alt="image" src="https://github.com/user-attachments/assets/0bbee3b1-f2a5-4b55-b928-2b613bd3ae07" />
-
-
-### [Bài 2] Thêm hàng loạt tài sản (Batch Create)
-
-Sử dụng Transaction để đảm bảo tính toàn vẹn dữ liệu (Tối đa 100 tài sản/lần).
-
-curl.exe -X POST http://localhost:8080/assets/batch \
--H "Content-Type: application/json" \
--d '{
-  "assets": [
-    {"name": "Firewall-Core", "type": "ip"},
-    {"name": "cmc.com.vn", "type": "domain"},
-    {"name": "DB-Server-01", "type": "service"}
-  ]
-}'
-
-
-
+#### [Bài 2] Thêm hàng loạt tài sản (Batch Create)
 <img width="1578" height="96" alt="image" src="https://github.com/user-attachments/assets/c5e77937-ee30-4bb3-a455-bc212485a99a" />
 
-### [Bài 3] Xóa hàng loạt (Batch Delete)
-
-Xóa nhiều tài sản cùng lúc bằng toán tử IN. 
-
-
-
-(Vui lòng thay thế chuỗi ID bên dưới bằng các ID thực tế sinh ra từ Bài 2)
-
-
+#### [Bài 3] Xóa hàng loạt (Batch Delete)
+```bash
 curl.exe -X DELETE "http://localhost:8080/assets/batch?ids=id-1,id-2,id-3"
+```
 <img width="1069" height="56" alt="image" src="https://github.com/user-attachments/assets/d874ad13-2cc2-46b4-b765-3a69e54f903e" />
 
-### [Bài 4 & 5] Thuật toán Retry & Giám sát sức khỏe (Health Check)
-
-Kiểm tra trạng thái của Server và Database (Bài 5)
-
+#### [Bài 4 & 5] Thuật toán Retry & Giám sát sức khỏe (Health Check)
+```bash
 curl.exe -X GET http://localhost:8080/health
+```
 <img width="799" height="81" alt="image" src="https://github.com/user-attachments/assets/783af0ba-404c-4da2-b732-c45142297ef2" />
 
-
-
-Test bài 4 (Retry): Bạn hãy thử tắt container db trong Docker đi, sau đó khởi chạy lại server bằng go run cmd/server/main.go. Bạn sẽ thấy log hệ thống kích hoạt Exponential Backoff, tự động lùi thời gian chờ và thử kết nối lại tối đa 5 lần thay vì sập (panic) ngay lập tức
-
-docker-compose stop db
+Test Retry:
 <img width="1529" height="103" alt="image" src="https://github.com/user-attachments/assets/e956bb7e-eb24-4a99-8a63-e6165282b939" />
 <img width="1255" height="239" alt="image" src="https://github.com/user-attachments/assets/9293e874-cdd8-48b5-9d19-d81723387dd4" />
 
-### [Bài 6] Phân trang danh sách (Pagination)
-
-Lấy danh sách tài sản ở trang 1, mỗi trang lấy tối đa 5 bản ghi
-
-
+#### [Bài 6] Phân trang danh sách (Pagination)
+```bash
 curl.exe -X GET "http://localhost:8080/assets?page=1&limit=5"
+```
 <img width="1600" height="130" alt="image" src="https://github.com/user-attachments/assets/acfc191b-572d-4ddd-be39-31c782561090" />
 
-### [Bài 7] Tìm kiếm gần đúng (Search)
-
-Tìm kiếm "gần đúng" (ILIKE) không phân biệt hoa thường. 
-
-
-Ví dụ: Tìm các tài sản có chứa chữ "firewall"
-
-
-
+#### [Bài 7] Tìm kiếm gần đúng (Search)
+```bash
 curl.exe -X GET "http://localhost:8080/assets/search?q=firewall"
-
+```
 <img width="1607" height="106" alt="image" src="https://github.com/user-attachments/assets/038183b5-74ec-494d-9214-3a329ba97322" />
 
 <a id="phong-chong-khac"></a>
-### 🛡️  Các cách phòng chống SQL Injection KHÁC (Có thể triển khai thêm)
+### 🛡️ Các cách phòng chống SQL Injection KHÁC (Đã phân tích)
 
 ```text
-🛡️ Cách 1: Áp dụng Nguyên tắc đặc quyền tối thiểu (Principle of Least Privilege - PoLP)
-Triển khai: Thay vì để API Go kết nối vào Database bằng tài khoản siêu quản trị postgres (có quyền xóa toàn bộ DB), ta sẽ tạo một user riêng (ví dụ: api_user).
-
-Tác dụng: Cấp cho api_user này chỉ có quyền SELECT, INSERT, UPDATE, DELETE trên đúng bảng assets. Nếu hacker có tìm ra được một lỗ hổng SQLi đi chăng nữa và gửi lệnh DROP TABLE assets, PostgreSQL sẽ chặn lại ngay lập tức và báo lỗi: "Permission denied".
+🛡️ Cách 1: Áp dụng Nguyên tắc đặc quyền tối thiểu (PoLP)
+Thay vì để API dùng tài khoản siêu quản trị postgres, tạo một user riêng chỉ có quyền SELECT, INSERT, UPDATE, DELETE trên đúng bảng assets. 
 
 🛡️ Cách 2: Sử dụng ORM hoặc Query Builder
-Triển khai: Trong các dự án Go thực tế lớn hơn, thay vì tự viết SQL thuần (database/sql) như hiện tại, người ta thường dùng các thư viện ORM (như GORM) hoặc Query Builder (như Squirrel).
-
-Tác dụng: Các thư viện này tự động hóa hoàn toàn việc "làm sạch" (sanitize) dữ liệu và bọc tham số. Bạn chỉ cần viết code dạng db.Where("name = ?", userInput), thư viện sẽ tự động lo phần chống SQL Injection bên dưới.
+Sử dụng các thư viện ORM (như GORM) tự động hóa hoàn toàn việc "làm sạch" dữ liệu.
 
 🛡️ Cách 3: Lớp giáp hạ tầng - Tường lửa ứng dụng web (WAF)
-Triển khai: Triển khai một hệ thống WAF (như Cloudflare, AWS WAF, hoặc ModSecurity) đứng chắn phía trước API Server (Cổng 8080) của bạn.
-
-Tác dụng: WAF có các tập luật (ruleset) nhận diện các dấu hiệu độc hại. Nếu một request gửi lên có chứa các từ khóa nhạy cảm ghép cùng nhau như UNION SELECT, 1=1, hay DROP TABLE, WAF sẽ tự động khóa IP của hacker lại và trả về lỗi 403 Forbidden trước khi request đó kịp chạm tới code Go của bạn.
+WAF chặn lại ngay từ ban đầu các cụm từ độc hại (như UNION SELECT).
 ```
-
-
-
-
-
-
-
