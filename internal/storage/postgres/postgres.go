@@ -50,6 +50,11 @@ func NewPostgresStorage(dsn string) (*PostgresStorage, error) {
 	return &PostgresStorage{db: db}, nil
 }
 
+// DB trả về abstract *sql.DB underlying instance
+func (s *PostgresStorage) DB() *sql.DB {
+	return s.db
+}
+
 // Ping  (Health Check)
 func (s *PostgresStorage) Ping() error {
 	return s.db.Ping()

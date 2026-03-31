@@ -8,6 +8,7 @@ import (
 	"mini-asm/internal/storage/postgres"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -41,9 +42,13 @@ func main() {
 	// 3. Khởi tạo Services & Handlers
 	assetService := service.NewAssetService(store)
 	scanService := service.NewScanService()
+	
+	alertStorage := postgres.NewPostgresAlertStorage(store.DB())
+	alertService := service.NewAlertService(alertStorage, store)
 
 	assetHandler := handler.NewAssetHandler(assetService, scanService)
 	healthHandler := handler.NewHealthHandler(store)
+	alertHandler := handler.NewAlertHandler(alertService)
 
 	// 4. Định nghĩa Router
 	router := mux.NewRouter()
@@ -64,14 +69,18 @@ func main() {
 	router.HandleFunc("/assets/{id}/scan", assetHandler.StartScan).Methods("POST")
 	router.HandleFunc("/scan-jobs/{id}/results", assetHandler.GetScanResults).Methods("GET")
 
+	// --- Alert Routes (Bài 6) ---
+	alertHandler.RegisterRoutes(router)
+
 	// 5. Chạy Server với CORS Middleware (Bài 3)
 	// Bọc router bằng CORSMiddleware để Frontend cổng 3000 gọi được API cổng 8080
 	port := ":8080"
 	log.Printf("🚀 Server đang khởi chạy tại http://localhost%s ...", port)
 
 	server := &http.Server{
-		Addr:    port,
-		Handler: handler.CORSMiddleware(router),
+		Addr:              port,
+		Handler:           handler.CORSMiddleware(router),
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 
 	if err := server.ListenAndServe(); err != nil {

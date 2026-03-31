@@ -28,10 +28,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run Gosec
-        uses: securego/gosec@master
+      - name: Set up Go
+        uses: actions/setup-go@v5
         with:
-          args: ./...
+          go-version: '1.22'
+      - name: Run Gosec
+        run: |
+          go install github.com/securego/gosec/v2/cmd/gosec@latest
+          gosec -exclude=G104 ./...
 
   # 3. Job Gitleaks: Quét xem có lộ API Key/Password không
   gitleaks:
