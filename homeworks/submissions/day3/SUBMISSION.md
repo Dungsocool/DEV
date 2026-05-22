@@ -1,37 +1,37 @@
 # Homework Submission - Day 3
 
-**Họ tên:** Đặng Tiến Dũng
+**Student Name:** Dong Tien Dung
 
-## Các bài đã hoàn thành
+## Completed Exercises
 
-- [x] Bài 1: Mở rộng Scan API
-- [x] Bài 2: Viết Unit Tests
-- [x] Bài 3: Tích hợp Frontend
-- [x] Bài 4: CI/CD với GitHub Actions
-- [x] Bài 5: Deploy với Docker Compose
-- [x] Bài 6: Tính năng EASM mới (Bonus - Alerts API)
-- [x] Bài 7: Deploy lên Cloud VM (Bonus)
-- [x] Bài 8: Domain & TLS/HTTPS (Bonus)
-- [x] Bài 9: Auto Deploy on Merge (Bonus)
+- [x] Exercise 1: EASM Scan Engine API
+- [x] Exercise 2: Integrated Unit Tests
+- [x] Exercise 3: Integrated UI Frontend
+- [x] Exercise 4: CI/CD Security Pipeline with GitHub Actions
+- [x] Exercise 5: Infrastructure as Code with Docker Compose
+- [x] Exercise 6: EASM Alerts API (Bonus)
+- [x] Exercise 7: Deploy to Cloud VM (Bonus)
+- [x] Exercise 8: Dynamic Domain & TLS/HTTPS (Bonus)
+- [x] Exercise 9: Auto Deploy on Merge (Bonus)
 
-## Link Repository
+## Repository Link
 
-[GitHub Repository: https://github.com/Dungsocool/DEV]
+[GitHub Repository: https://github.com/Dungsocool/easm-platform]
 
-## Link Demo (nếu có)
+## Demo Link (if applicable)
 
 [Live Demo: https://dungsocool-asm.duckdns.org]
 
 ---
 
-## 📸 MINH CHỨNG (Evidence)
+## 📷 Evidence (Verification Details)
 
-### Bài 1: Mở rộng Scan API
-Các endpoint `POST /assets/{id}/scan` với các loại `ip`, `port` đã hoạt động tốt. (Bằng chứng ở dưới phần Frontend do UI gọi trực tiếp API và show Data JSON trả về thành công).
+### Exercise 1: EASM Scan Engine API
+The `POST /assets/{id}/scan` endpoints with scan types `ip` and `port` are working perfectly. (Verification can be seen on the frontend UI where the dashboard calls the API directly and renders returned JSON data).
 
-### Bài 2: Viết Unit Tests
-Lệnh `go test -v -coverprofile=coverage.out ./...` chạy thành công, quét được coverage.  
-**Kết quả Output:**
+### Exercise 2: Integrated Unit Tests
+Successfully ran `go test -v -coverprofile=coverage.out ./...` to calculate coverage.  
+**Output Results:**
 ```text
 === RUN   TestAssetValidation
 --- PASS: TestAssetValidation (0.00s)
@@ -46,33 +46,32 @@ coverage: 55.3% of statements
 ok      mini-asm/internal/scanner       7.048s  coverage: 55.3% of statements
 ```
 
-### Bài 3: Tích hợp Frontend
-Đã tích hợp Backend và Frontend ở port `3000`. Có thể nhập liệu tạo mới IP `127.0.0.1` và chạy Port Scan thành công, Modal kết quả hiển thị thông tin Open Ports.
-*(Bạn có thể xem ảnh chụp giao diện Frontend bên dưới)*
+### Exercise 3: Integrated UI Frontend
+Integrated backend and frontend at port `3000`. We can add a target IP like `127.0.0.1` and execute a Port Scan successfully. The modal pops up and renders all discovered Open Ports.
+*(A screenshot of the frontend interface is shown below)*
 
 ![Frontend UI](docs/images/frontend-ui.png)
 
-### Bài 4: CI/CD với GitHub Actions
-File `.github/workflows/ci.yml` đã cài đặt chuẩn các check bảo mật (gosec, gitleaks, trivy, trufflehog). Khi đẩy push pull request lên workflow trả về Pass toàn bộ (bạn có thể capture lại ảnh trên tab Actions của Github repository nhé).
+### Exercise 4: CI/CD Security Pipeline with GitHub Actions
+The `.github/workflows/ci.yml` is configured with security checkers (gosec, gitleaks, trivy, trufflehog). Pull Requests triggers tests and all CI jobs successfully pass.
 
-### Bài 5: Deploy với Docker Compose
-Bằng chứng Docker container up thành công:
+### Exercise 5: Infrastructure as Code with Docker Compose
+Successfully launched all services via Docker Compose:
 ```text
-PS C:\Users\xxx\DEV> docker compose ps
+PS C:\Users\xxx\easm-platform> docker compose ps
 NAME           IMAGE                COMMAND                  SERVICE    CREATED              STATUS                  PORTS
 cmc_backend    dev-backend          "./main"                 backend    10 minutes ago       Up 15 minutes           0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
-cmc_frontend   dev-frontend         "/docker-entrypoint.…"   frontend   10 minutes ago       Up 15 minutes           0.0.0.0:3000->80/tcp, [::]:3000->80/tcp
-cmc_postgres   postgres:15-alpine   "docker-entrypoint.s…"   db         10 minutes ago       Up 15 minutes (healthy) 0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+cmc_frontend   dev-frontend         "/docker-entrypoint..."   frontend   10 minutes ago       Up 15 minutes           0.0.0.0:3000->80/tcp, [::]:3000->80/tcp
+cmc_postgres   postgres:15-alpine   "docker-entrypoint.s..."   db         10 minutes ago       Up 15 minutes (healthy) 0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
 ```
 
-### Bài 6: Tính năng EASM mới (Bonus)
-Đã triển khai hệ thống Alerts API dùng để cảnh báo phát hiện issues, cung cấp các API lấy thống kê số lượng loại cảnh báo theo từng Asset.
-*(Kết quả đã được tích hợp hiển thị trực tiếp trên Dashboard live)*
+### Exercise 6: EASM Alerts API (Bonus)
+Deployed the Alerts API system to warn about detected vulnerabilities and issues, providing endpoint statistics by asset.
+*(Results are rendered directly on the live Dashboard)*
 
-### Bài 7 & 8: Cloud Deployment & HTTPS
-Ứng dụng đã được triển khai thực tế trên DigitalOcean Droplet tại IP `159.223.60.128` và trỏ tên miền thành công. Ổ khóa xanh HTTPS (Let's Encrypt) đã được kích hoạt.
-**Link kiểm tra:** [https://dungsocool-asm.duckdns.org](https://dungsocool-asm.duckdns.org)
+### Exercise 7 & 8: Cloud Deployment & HTTPS
+The application is deployed on a live DigitalOcean Droplet at IP `159.223.60.128` and the domain has been successfully pointed. The Let's Encrypt SSL/TLS secure lock is active.
+**Live check link:** [https://dungsocool-asm.duckdns.org](https://dungsocool-asm.duckdns.org)
 
-### Bài 9: Auto Deploy on Merge
-Hệ thống CI/CD GitHub Actions đã được cấu hình với SSH Secret. Mỗi khi có code mới đẩy lên nhánh `main`, server sẽ tự động cập nhật phiên bản mới nhất mà không cần can thiệp thủ công.
-*(Trạng thái "Success" hiển thị trong tab Actions của repository)*
+### Exercise 9: Auto Deploy on Merge
+GitHub Actions is configured with SSH Secrets. Every time new code is merged into the `main` branch, the server automatically updates to the latest version.
